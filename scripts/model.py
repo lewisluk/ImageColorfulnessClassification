@@ -14,14 +14,13 @@ class ResNext():
         self.input = tf.placeholder(dtype=tf.float32, shape=[None, 512, 512, 3], name='x_input')
         self.label = tf.placeholder(dtype=tf.float32, shape=[None, 1], name='y_label')
         self.epochs = epochs
-        self.training = tf.placeholder(dtype=tf.bool, shape=None, name='istraining')
         self.learning_rate = learning_rate
         self.result_path = 'result'
         self.data_path = '/data/image_colorfulness'
         self.class1_dir_name = 'B'
         self.class0_dir_name = 'A'
         self.batchsize = batchsize
-        self.mylayers = layers(self.training, depth, cardinality, blocks)
+        self.mylayers = layers(depth, cardinality, blocks)
 
     def build(self, inputs):
         input_x = self.mylayers.first_layer(inputs, scope='first_layer')
@@ -56,9 +55,9 @@ class ResNext():
         self.train_names, self.val_names = self.my_io_handler.get_train_val_names()
         print('Dataset divided')
 
-    def start_training(self, load_model=False):
+    def start_training(self, load_model, index):
         if load_model:
-            self.saver.restore(self.sess, os.path.join(self.result_path, 'model.ckpt'))
+            self.saver.restore(self.sess, os.path.join(self.result_path, 'model_{:03d}.ckpt'.format(index)))
         for i in range(self.epochs):
             # initialize metrics for training data evaluation
             my_metrics = metrics(self.batchsize)
@@ -70,8 +69,7 @@ class ResNext():
                 img_batch, label_batch \
                     = self.my_io_handler.load_image_label_batch(j, self.train_names)
                 train_dict = {self.input:img_batch,
-                              self.label:label_batch,
-                              self.training:True}
+                              self.label:label_batch}
                 _, loss, predict = self.sess.run([self.opt, self.loss, self.prediction],
                                         feed_dict=train_dict)
                 my_metrics.accumulate(predict, label_batch)
@@ -101,8 +99,7 @@ class ResNext():
                 img_batch, label_batch \
                     = self.my_io_handler.load_image_label_batch(j, self.val_names)
                 val_dict = {self.input:img_batch,
-                              self.label:label_batch,
-                              self.training:False}
+                              self.label:label_batch}
                 loss, predict = self.sess.run([self.loss, self.prediction],
                                         feed_dict=val_dict)
                 my_metrics.accumulate(predict, label_batch)
@@ -120,3 +117,4 @@ class ResNext():
                   'recall0:{:.4f}, prec1:{:.4f}, recall1:{:.4f}, mAP:{:.4f}'.format(
                 i + 1, np.mean(val_loss), acc, prec0, recall0, prec1, recall1, mAP
             ))
+            self.saver.save(self.sess, 'result/model_{:03d}.ckpt'.format(i + 1))

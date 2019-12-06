@@ -1,5 +1,6 @@
 import tensorflow as tf, numpy as np
 import tensorflow.contrib.slim as slim
+from tensorflow.python.training.moving_averages import assign_moving_average
 
 def conv_layer(input, filter, kernel, stride, padding='SAME', layer_name="conv"):
     with tf.name_scope(layer_name):
@@ -18,12 +19,11 @@ def Average_pooling(x, pool_size=2, stride=2, padding='SAME'):
 def Concatenation(layers) :
     return tf.concat(layers, axis=3)
 
-def Batch_Normalization(x, training, scope):
-    return slim.batch_norm(x, is_training=training, scope=scope)
+def Layer_Normalization(x, scope):
+    return slim.layer_norm(x, scope=scope)
 
 class layers():
-    def __init__(self, training, depth, cardinality, blocks):
-        self.training = training
+    def __init__(self, depth, cardinality, blocks):
         self.depth = depth
         self.cardinality = cardinality
         self.blocks = blocks
@@ -31,7 +31,7 @@ class layers():
     def first_layer(self, x, scope):
         with tf.name_scope(scope):
             x = conv_layer(x, filter=64, kernel=[3, 3], stride=1, layer_name=scope + '_conv1')
-            x = Batch_Normalization(x, training=self.training, scope=scope + '_batch1')
+            x = Layer_Normalization(x, scope=scope + '_batch1')
             x = tf.nn.selu(x)
 
             return x
@@ -39,18 +39,18 @@ class layers():
     def transform_layer(self, x, stride, scope):
         with tf.name_scope(scope):
             x = conv_layer(x, filter=self.depth, kernel=[1, 1], stride=stride, layer_name=scope + '_conv1')
-            x = Batch_Normalization(x, training=self.training, scope=scope + '_batch1')
+            x = Layer_Normalization(x, scope=scope + '_batch1')
             x = tf.nn.selu(x)
 
             x = conv_layer(x, filter=self.depth, kernel=[3, 3], stride=1, layer_name=scope + '_conv2')
-            x = Batch_Normalization(x, training=self.training, scope=scope + '_batch2')
+            x = Layer_Normalization(x, scope=scope + '_batch2')
             x = tf.nn.selu(x)
             return x
 
     def transition_layer(self, x, out_dim, scope):
         with tf.name_scope(scope):
             x = conv_layer(x, filter=out_dim, kernel=[1, 1], stride=1, layer_name=scope + '_conv1')
-            x = Batch_Normalization(x, training=self.training, scope=scope + '_batch1')
+            x = Layer_Normalization(x, scope=scope + '_batch1')
             # x = tf.nn.selu(x)
 
             return x

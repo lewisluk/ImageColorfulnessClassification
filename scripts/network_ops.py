@@ -1,6 +1,5 @@
 import tensorflow as tf, numpy as np
 import tensorflow.contrib.slim as slim
-from tensorflow.python.training.moving_averages import assign_moving_average
 
 def conv_layer(input, filter, kernel, stride, padding='SAME', layer_name="conv"):
     with tf.name_scope(layer_name):

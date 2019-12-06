@@ -57,7 +57,8 @@ class ResNext():
 
     def start_training(self, load_model, index):
         if load_model:
-            self.saver.restore(self.sess, os.path.join(self.result_path, 'model_{:03d}.ckpt'.format(index)))
+            self.saver.restore(self.sess, os.path.join(self.result_path,
+                                                       'model_{:03d}.ckpt'.format(index)))
         for i in range(self.epochs):
             # initialize metrics for training data evaluation
             my_metrics = metrics(self.batchsize)
@@ -84,7 +85,7 @@ class ResNext():
             my_metrics.get_recall(1),\
             my_metrics.get_mAP()
 
-            print('Train Ep:{:d}, loss:{:.4f}, acc:{:.4f}, prec0:{:.4f}, '
+            print('Train\tEp:{:d}, loss:{:.4f}, acc:{:.4f}, prec0:{:.4f}, '
                   'recall0:{:.4f}, prec1:{:.4f}, recall1:{:.4f}, mAP:{:.4f}'.format(
                 i+1, np.mean(train_loss), acc, prec0, recall0, prec1, recall1, mAP
             ))
@@ -113,7 +114,7 @@ class ResNext():
                 my_metrics.get_precision(1), \
                 my_metrics.get_recall(1), \
                 my_metrics.get_mAP()
-            print('Validation Ep:{:d}, loss:{:.4f}, acc:{:.4f}, prec0:{:.4f}, '
+            print('Validation \tEp:{:d}, loss:{:.4f}, acc:{:.4f}, prec0:{:.4f}, '
                   'recall0:{:.4f}, prec1:{:.4f}, recall1:{:.4f}, mAP:{:.4f}'.format(
                 i + 1, np.mean(val_loss), acc, prec0, recall0, prec1, recall1, mAP
             ))

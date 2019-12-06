@@ -11,7 +11,7 @@ class io_handler():
 
     def get_train_val_names(self):
         names = os.listdir(os.path.join(self.data_path, self.class0_dir_name))
-        train_names, val_names = train_test_split(names, test_size=0.05, random_state=1)
+        train_names, val_names = train_test_split(names, test_size=0.1, random_state=1)
         return train_names, val_names
 
     def load_image_label_batch(self, iter, names):

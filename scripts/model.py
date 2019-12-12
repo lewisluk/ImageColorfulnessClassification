@@ -77,17 +77,16 @@ class ResNext():
                 train_loss.append(loss)
 
             # get training metrics from my_metrics
-            acc, prec0, recall0, prec1, recall1, mAP = \
+            acc, prec0, recall0, prec1, recall1 = \
             my_metrics.get_acc(),\
             my_metrics.get_precision(0),\
             my_metrics.get_recall(0),\
             my_metrics.get_precision(1),\
-            my_metrics.get_recall(1),\
-            my_metrics.get_mAP()
+            my_metrics.get_recall(1)
 
             print('Train\tEp:{:d}, loss:{:.4f}, acc:{:.4f}, prec0:{:.4f}, '
-                  'recall0:{:.4f}, prec1:{:.4f}, recall1:{:.4f}, mAP:{:.4f}'.format(
-                i+1, np.mean(train_loss), acc, prec0, recall0, prec1, recall1, mAP
+                  'recall0:{:.4f}, prec1:{:.4f}, recall1:{:.4f}'.format(
+                i+1, np.mean(train_loss), acc, prec0, recall0, prec1, recall1
             ))
 
             # initialize metrics for validation data evaluation
@@ -107,15 +106,14 @@ class ResNext():
                 val_loss.append(loss)
 
             # get validation metrics from my_metrics
-            acc, prec0, recall0, prec1, recall1, mAP = \
+            acc, prec0, recall0, prec1, recall1 = \
                 my_metrics.get_acc(), \
                 my_metrics.get_precision(0), \
                 my_metrics.get_recall(0), \
                 my_metrics.get_precision(1), \
-                my_metrics.get_recall(1), \
-                my_metrics.get_mAP()
+                my_metrics.get_recall(1)
             print('Validation \tEp:{:d}, loss:{:.4f}, acc:{:.4f}, prec0:{:.4f}, '
-                  'recall0:{:.4f}, prec1:{:.4f}, recall1:{:.4f}, mAP:{:.4f}'.format(
-                i + 1, np.mean(val_loss), acc, prec0, recall0, prec1, recall1, mAP
+                  'recall0:{:.4f}, prec1:{:.4f}, recall1:{:.4f}'.format(
+                i + 1, np.mean(val_loss), acc, prec0, recall0, prec1, recall1
             ))
             self.saver.save(self.sess, 'result/model_{:03d}.ckpt'.format(i + 1))

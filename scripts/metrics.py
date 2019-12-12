@@ -47,10 +47,6 @@ class metrics():
         else:
             return np.divide(self.tp0, (self.tp0 + self.fn0))
 
-    def get_mAP(self):
-        return np.mean([np.divide(self.tp0, (self.tp0 + self.fp0)),
-                        np.divide(self.tp1, (self.tp1 + self.fp1))])
-
 if __name__=='__main__':
     test = metrics(batchsize=4)
     test.accumulate([[0.7], [0.2], [0.8], [0.1]],
